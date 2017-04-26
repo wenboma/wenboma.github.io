@@ -156,11 +156,10 @@
   </header>
 
   <section class="post">
-    <p>####导语：<br> GCD有很多API，这是我的第一篇博客，就分散的想到哪儿就记录到哪儿吧，以后再整理。</p>
+    <h4 id="导语："><a href="#导语：" class="headerlink" title="导语："></a>导语：</h4><p> GCD有很多API，这是我的第一篇博客，就分散的想到哪儿就记录到哪儿吧，以后再整理。</p>
 <p> 今天主要介绍两组API ：设置、获取tag，<strong>dispatch_queue_set_specific/dispatch_get_specific</strong></p>
 <p> 设置、后去contex，<strong>dispatch_set_context/dispatch_get_context</strong></p>
-<p> ###1. dispatch_queue_set_specific/dispatch_get_specific</p>
-<p> 这个API可以给队列添加一个标识，关联一个context，还可以在一个队列中判断这个KEY是否是属于这个队列。不废话直接上代码</p>
+<h3 id="1-dispatch-queue-set-specific-dispatch-get-specific"><a href="#1-dispatch-queue-set-specific-dispatch-get-specific" class="headerlink" title="1. dispatch_queue_set_specific/dispatch_get_specific"></a>1. dispatch_queue_set_specific/dispatch_get_specific</h3><p> 这个API可以给队列添加一个标识，关联一个context，还可以在一个队列中判断这个KEY是否是属于这个队列。不废话直接上代码</p>
  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">dispatch_queue_t firstQueue = dispatch_queue_create(&quot;first.com&quot;,DISPATCH_QUEUE_SERIAL);</div><div class="line">static  void  * _Nullable   kFirstQueueKey = &quot;123&quot;;</div><div class="line">dispatch_queue_set_specific(firstQueue, kFirstQueueKey, (void *_Nullable)[@&quot;context123&quot; UTF8String], &amp;destructorInvoke);</div><div class="line">dispatch_async(firstQueue, ^&#123;</div><div class="line">     void *_Nullable charContext = dispatch_get_specific(kFirstQueueKey);</div><div class="line">     NSString * stringContext = [NSString stringWithUTF8String:charContext];</div><div class="line">     if(stringContext)&#123;</div><div class="line">          NSLog(@&quot;firstQueue key is kFirstQueueKey&quot;);</div><div class="line">        	void *_Nullable context =  (dispatch_queue_get_specific(firstQueue, kFirstQueueKey));</div><div class="line">          NSLog(@&quot;context is :%@&quot;,[NSString stringWithUTF8String:context]);</div><div class="line">          dispatch_queue_set_specific(firstQueue, kFirstQueueKey, (void *_Nullable)[@&quot;context456&quot; UTF8String], &amp;destructorInvoke);</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">void destructorInvoke( void *string)&#123;</div><div class="line">    NSLog(@&quot;conext changed :%@&quot;,[NSString stringWithUTF8String:string]);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h4 id="dispatch-queue-set-specific"><a href="#dispatch-queue-set-specific" class="headerlink" title="dispatch_queue_set_specific"></a>dispatch_queue_set_specific</h4><p> queue：需要关联的queue，不允许传入NULL</p>
 <p> key：唯一的关键字</p>
@@ -174,8 +173,7 @@
 <p>   运行结果<br>   <img src="http://ooyha5x8f.bkt.clouddn.com/2.png" alt=""></p>
 <p>因为是并行执行队列，所以执行结果顺序与我们代码写入的顺序不太一致</p>
 <p><strong>应用场景</strong>：有时候我们需要将某些东西关联到队列上，比如我们想在某个队列上存一个东西，或者我们想区分2个队列。GCD提供了dispatch_queue_set_specific方法，通过key，将context关联到queue上</p>
-<p>###2. dispatch_set_context/dispatch_get_context</p>
-<p>上下文数据绑定可以看成是对dispatch_object_t 对象进行真正的数据绑定，虽然极少使用，但还是做一介绍。其中有需要一些注意的地方。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">   dispatch_queue_t firstQueue = dispatch_queue_create(&quot;first.com&quot;, DISPATCH_QUEUE_SERIAL);</div><div class="line">   </div><div class="line">   /**</div><div class="line">    1、绑定一个void *的数据类型，但需要__bridge_retained关键字；</div><div class="line">    2、当你创建一个OC对象进行绑定时，当方法执行完毕，这个对象被释放；</div><div class="line">    3、要保证在block中获取正确的数据时，需要保证该数据还存在；</div><div class="line">    4、使用__bridge_retained关键字能避开ARC，这样就能手动释放。</div><div class="line">    */</div><div class="line">   dispatch_set_context(firstQueue, (__bridge_retained void *)@&quot;123456789&quot;);</div><div class="line">   </div><div class="line">   /**</div><div class="line">    析构函数，在这个函数调用时，释放绑定的数据。这个函数会在指定队列中的所有应用全部被释放后</div><div class="line">    */</div><div class="line">   dispatch_set_finalizer_f(firstQueue, freeContext);</div><div class="line">   </div><div class="line">   dispatch_sync(firstQueue, ^&#123;</div><div class="line">       </div><div class="line">       NSLog(@&quot;%@&quot;,dispatch_get_context(firstQueue));</div><div class="line">       </div><div class="line">       NSLog(@&quot; 运行在 firstQueue 中&quot;);</div><div class="line">       </div><div class="line">   &#125;);</div><div class="line"></div><div class="line">void freeContext(void * ctx)</div><div class="line">&#123;</div><div class="line">  		 CFRelease(ctx);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="2-dispatch-set-context-dispatch-get-context"><a href="#2-dispatch-set-context-dispatch-get-context" class="headerlink" title="2. dispatch_set_context/dispatch_get_context"></a>2. dispatch_set_context/dispatch_get_context</h3><p>上下文数据绑定可以看成是对dispatch_object_t 对象进行真正的数据绑定，虽然极少使用，但还是做一介绍。其中有需要一些注意的地方。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">   dispatch_queue_t firstQueue = dispatch_queue_create(&quot;first.com&quot;, DISPATCH_QUEUE_SERIAL);</div><div class="line">   </div><div class="line">   /**</div><div class="line">    1、绑定一个void *的数据类型，但需要__bridge_retained关键字；</div><div class="line">    2、当你创建一个OC对象进行绑定时，当方法执行完毕，这个对象被释放；</div><div class="line">    3、要保证在block中获取正确的数据时，需要保证该数据还存在；</div><div class="line">    4、使用__bridge_retained关键字能避开ARC，这样就能手动释放。</div><div class="line">    */</div><div class="line">   dispatch_set_context(firstQueue, (__bridge_retained void *)@&quot;123456789&quot;);</div><div class="line">   </div><div class="line">   /**</div><div class="line">    析构函数，在这个函数调用时，释放绑定的数据。这个函数会在指定队列中的所有应用全部被释放后</div><div class="line">    */</div><div class="line">   dispatch_set_finalizer_f(firstQueue, freeContext);</div><div class="line">   </div><div class="line">   dispatch_sync(firstQueue, ^&#123;</div><div class="line">       </div><div class="line">       NSLog(@&quot;%@&quot;,dispatch_get_context(firstQueue));</div><div class="line">       </div><div class="line">       NSLog(@&quot; 运行在 firstQueue 中&quot;);</div><div class="line">       </div><div class="line">   &#125;);</div><div class="line"></div><div class="line">void freeContext(void * ctx)</div><div class="line">&#123;</div><div class="line">  		 CFRelease(ctx);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>   <img src="http://ooyha5x8f.bkt.clouddn.com/3.png" alt=""></p>
 <p>不能给mainqueue和全局和全局队列设置context，取出来为NULL。<br>这个context和dispatchqueuesetspecific的context 不是一回事，亲测过，上面设置context 用这个方法取 是取不出来的。dispatchqueuesetspecific 是key 对应的context。</p>
 
@@ -184,7 +182,27 @@
 </article>
 
 <section class="read-more">
+           
+    
+        
+        
+               
+            <div class="read-more-item">
+                <span class="read-more-item-dim">更早的文章</span>
+                <h2 class="post-list__post-title post-title"><a href="/2017/04/25/GCD设置target队列:线程复用/" title="GCD设置target队列以及线程复用">GCD设置target队列以及线程复用</a></h2>
+                <p class="excerpt">
+                
+                导语： 有时候我们需要将多个队列按照我们想要的方式去执行或者管理，当然我们可以使用group实现，今天我们要介绍另外一个API，设置target队列，在简要说明下线程的复用
+1. dispatch_set_target_queue 直接上代码和运行结果，一看就能明白hexo
+ 12345678910
+                &hellip;
+                </p>
+                <div class="post-list__meta"><time datetime="2017-04-25T07:46:23.000Z" class="post-list__meta--date date">2017-04-25</time> &#8226; <span class="post-list__meta--tags tags">于&nbsp;</span><a class="btn-border-small" href="/2017/04/25/GCD设置target队列:线程复用/">继续阅读</a></div>
+                       
+            </div>
+        
      
+   
    
   
 </section>
