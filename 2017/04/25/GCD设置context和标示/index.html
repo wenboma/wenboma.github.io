@@ -191,17 +191,15 @@
                
             <div class="read-more-item">
                 <span class="read-more-item-dim">更早的文章</span>
-                <h2 class="post-list__post-title post-title"><a href="/2017/04/26/GCD设置target队列:线程复用/" title="GCD设置target队列以及线程复用">GCD设置target队列以及线程复用</a></h2>
+                <h2 class="post-list__post-title post-title"><a href="/2017/04/26/GCD_Barrier/" title="GCD Barrier">GCD Barrier</a></h2>
                 <p class="excerpt">
                 
-                导语： 有时候我们需要将多个队列按照我们想要的方式去执行或者管理，当然我们可以使用group实现，今天我们要介绍另外一个API，设置target队列，在简要说明下线程的复用
-1. dispatch_set_target_queue 直接上代码和运行结果，一看就能明白hexo
- 12345678910
+                导语： 有时候我们会有这种需求，在执行一个任务的时候，希望这个任务所在的队列的其他任务停掉等待这个任务执行完成再执行其他的任务，或者等其他任务执行完再执行这个任务，执行完这个任务再执行其他任务，这个时候我们可以给 这个task 设置Barrier 属性。或者我们一个多任务并发的队列，各个任务都需要读
                 &hellip;
                 </p>
                 <div class="post-list__meta"><time datetime="2017-04-25T16:00:00.000Z" class="post-list__meta--date date">2017-04-26</time> &#8226; <span class="post-list__meta--tags tags">于&nbsp;
   <a class="tag-link" href="/tags/GCD/">GCD</a>
-</span><a class="btn-border-small" href="/2017/04/26/GCD设置target队列:线程复用/">继续阅读</a></div>
+</span><a class="btn-border-small" href="/2017/04/26/GCD_Barrier/">继续阅读</a></div>
                        
             </div>
         

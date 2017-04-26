@@ -182,17 +182,15 @@
                
             <div class="read-more-item">
                 <span class="read-more-item-dim">最近的文章</span>
-                <h2 class="post-list__post-title post-title"><a href="/2017/04/25/GCD设置context和标示/" title="GCD  设置标示  和 context">GCD  设置标示  和 context</a></h2>
+                <h2 class="post-list__post-title post-title"><a href="/2017/04/26/GCD_Barrier/" title="GCD Barrier">GCD Barrier</a></h2>
                 <p class="excerpt">
                 
-                导语： GCD有很多API，这是我的第一篇博客，就分散的想到哪儿就记录到哪儿吧，以后再整理。
- 今天主要介绍两组API ：设置、获取tag，dispatch_queue_set_specific/dispatch_get_specific
- 设置、后去contex，dispatch_set_cont
+                导语： 有时候我们会有这种需求，在执行一个任务的时候，希望这个任务所在的队列的其他任务停掉等待这个任务执行完成再执行其他的任务，或者等其他任务执行完再执行这个任务，执行完这个任务再执行其他任务，这个时候我们可以给 这个task 设置Barrier 属性。或者我们一个多任务并发的队列，各个任务都需要读
                 &hellip;
                 </p>
-                <div class="post-list__meta"><time datetime="2017-04-24T16:00:00.000Z" class="post-list__meta--date date">2017-04-25</time> &#8226; <span class="post-list__meta--tags tags">于&nbsp;
+                <div class="post-list__meta"><time datetime="2017-04-25T16:00:00.000Z" class="post-list__meta--date date">2017-04-26</time> &#8226; <span class="post-list__meta--tags tags">于&nbsp;
   <a class="tag-link" href="/tags/GCD/">GCD</a>
-</span><a class="btn-border-small" href="/2017/04/25/GCD设置context和标示/">继续阅读</a></div>
+</span><a class="btn-border-small" href="/2017/04/26/GCD_Barrier/">继续阅读</a></div>
                            
             </div>
         
